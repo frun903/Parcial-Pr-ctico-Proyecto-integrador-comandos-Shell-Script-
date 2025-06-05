@@ -18,3 +18,5 @@ Gestor de directorios
 crea.
 3. Borrar directorios
 4.  Manejo de errores
+
+>[!TIPS] Esta pagina esta buena: https://soloconlinux.org.es/colores-en-bash/ 
