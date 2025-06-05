@@ -29,6 +29,13 @@ listar_directorio_actual(){
 }
 
 
+listar_directorioXdireccion(){
+    echo -e "Ingrese direccion"
+
+}
+
+
+
 # Listar Directorio
 
 # Listar directorio actual ()
