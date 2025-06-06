@@ -8,6 +8,21 @@ COLOR_VERDE="\e[1;32m"
 COLOR_RESET="\e[0m"
 
 
+#Declaro donde esta el errores.log
+LOGFILE="errores.log"
+
+
+# ---------------------------------------------------
+# Función: log_error
+# Recive el mensae de error y lo graba usando el comando date fecha/hora en errores.log creado previamente.
+# ---------------------------------------------------
+log_error(){
+    local mensaje="$1"
+    # Formato de fecha: YYYY-MM-DD HH:MM:SS
+    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: $mensaje" >> "$LOGFILE"
+}
+
+
 # --------------------------------------------------------------------------------------------------------------------------------------
 # Función: listar_directorio_actual
 # ---------------------------------------------------------------------------------------------------------------------------------------
