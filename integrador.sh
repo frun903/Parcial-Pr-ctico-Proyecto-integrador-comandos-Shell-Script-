@@ -152,6 +152,73 @@ listar_directorioXdireccion(){
 
 
 
+# ----------------------------------------------------------------------------------------------
+# Función: borrar_directorio_confirmacion
+# Pide ruta y borra recursivamente con -i, el -i le da una capa de seguridad haciendo
+# que por cada directorio (o elemento) el script pregunte "Quieres borrar eso?", te da la oportinidad de cancelar por si no querias borrar algo
+# ------------------------------------------------------------------------------------------------
+borrar_directorio_confirmacion(){
+    clear
+    echo "--Ingrese ruta del directorio a borrar: --"
+    read dir
+    if [[ -z "$dir" ]]; then
+        # -z se fija si dir contiene una cadena vacia 
+        log_error "Ruta vacia en borrar_directorio_confirmacion()"
+        echo -e "${COLOR_ROJO}No ingreso ninguna ruta.${COLOR_RESET}"
+
+    elif [[ ! -d "$dir" ]]; then
+        log_error "Directorio inbalido en borrar_directorio_confirmacion(): '$dir'"
+        echo -e "${COLOR_ROJO}Error: '$dir' no es un directorio balido.${COLOR_RESET}"
+    
+    else
+        rm -r -i "$dir" 2> /dev/null #recordemos este ultimo es que para que el error no se muestre x terminal 
+        if [[ $? -eq 0 ]]; then
+            echo -e "${COLOR_VERDE}Directorio borrado: '$dir'.${COLOR_RESET}"
+            sleep 1.5
+        else
+            log_error "Fallo al borrar '$dir' con (rm -r -i)"
+            echo -e "${COLOR_ROJO}Error al borrar el directorio '$dir'.${COLOR_RESET}"
+        fi
+    fi
+    echo "ENTER para continuar..."
+    read dummy
+}
+
+# ----------------------------------------------------------------------------------------------
+# Función: borrar_directorio_confirmacion
+# Pide ruta y borra recursivamente con -f, el -f borrara todo recursivamente sin preguntar
+# ------------------------------------------------------------------------------------------------
+
+borrar_directorio_SIN_confirmacion(){
+    clear
+    echo -e "${COLOR_ROJO}-- ATENCION ESTA FUNCION ELIMINARIO EL DIRECTORIO INDICADO SIN CONFIRMACION --${COLOR_RESET}"
+    echo -e "${COLOR_AMA}--Ingrese ruta del directorio a borrar: --${COLOR_RESET}"
+    read dir
+    if [[ -z "$dir" ]]; then
+        # -z se fija si dir contiene una cadena vacia 
+        log_error "Ruta vacia en borrar_directorio_SIN_confirmacion()"
+        echo -e "${COLOR_ROJO}No ingreso ninguna ruta.${COLOR_RESET}"
+
+    elif [[ ! -d "$dir" ]]; then
+        log_error "Directorio inbalido en borrar_directorio_SIN_confirmacion(): '$dir'"
+        echo -e "${COLOR_ROJO}Error: '$dir' no es un directorio balido.${COLOR_RESET}"
+    
+    else
+        rm -r -f "$dir" 2> /dev/null #recordemos este ultimo es que para que el error no se muestre x terminal 
+        if [[ $? -eq 0 ]]; then
+            echo -e "${COLOR_VERDE}Directorio borrado: '$dir'.${COLOR_RESET}"
+
+        else
+            log_error "Fallo al borrar '$dir' (rm -r -f)"
+            echo -e "${COLOR_ROJO}Error al borrar el directorio '$dir'.${COLOR_RESET}"
+        fi
+    fi
+    echo "ENTER para continuar..."
+    read dummy
+}
+
+
+
 
 # Menu principal 
 while true; do

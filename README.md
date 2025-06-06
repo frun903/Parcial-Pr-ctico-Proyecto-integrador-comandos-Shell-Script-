@@ -21,9 +21,20 @@ crea.
 
 >[!TIPS] Esta pagina esta buena: https://soloconlinux.org.es/colores-en-bash/ 
 
+## 1. Listar directorios
+Para el Listado directorios se penso en implementar dos funciones en base a donde se encuentre el usuario, la primera funcion que se implemento fue __listar_directorio_actual()__ lista y muestra por terminal los elementos del dirctorio donde se encuentre el usuario actualmente, y __listar_directorioXdireccion()__ por medio de una ruta solicitida por el usuario se listan los elementos del directorio indicado por la ruta. Ambas funciones tienen los mismo incisos o tipos de muestra
+- Listar contenido (sin ocultos)
+- Listar con archivos ocultos
+- Listar en formato árbol
+- Listar en formato largo (permisos)
+
+El manejo de errores se mostrar adecuadamente en el insiso 4 de manejo de errores.
 
 
-## Manejo de Errores
+## 3.Borrar directorios
+
+
+## 4.Manejo de Errores
 
 Se creo la funcion __log_error()__ que se encarga de tomar un mensaje de error (descripto por nosotros) por argumento y añadirlo a un errores.log de nuestro repositorio. La funcion utiliza internamiente _date_ para guarda la fecha y la hora en la que ocurrio el error.
 
