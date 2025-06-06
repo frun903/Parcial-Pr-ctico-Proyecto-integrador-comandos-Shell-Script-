@@ -171,7 +171,7 @@ borrar_directorio_confirmacion(){
         echo -e "${COLOR_ROJO}Error: '$dir' no es un directorio balido.${COLOR_RESET}"
     
     else
-        rm -r -i "$dir" 2> /dev/null #recordemos este ultimo es que para que el error no se muestre x terminal 
+        rm -r -i "$dir"
         if [[ $? -eq 0 ]]; then
             echo -e "${COLOR_VERDE}Directorio borrado: '$dir'.${COLOR_RESET}"
             sleep 1.5
@@ -217,6 +217,9 @@ borrar_directorio_SIN_confirmacion(){
     read dummy
 }
 
+# Direcciones para borra
+# /home/frang/Escritorio/D&D_(otra copia)
+# /home/frang/Escritorio/D&D_(copia)
 
 
 
@@ -229,9 +232,9 @@ while true; do
   case $opciones in 
     1) listar_directorio_actual ;;
     2) listar_directorioXdireccion ;;
-    3) echo "Punto 2" ;;
-    4) echo "Punto 3";;
-    5) echo -e "${COLOR_ROJO}Terminando Ejecucion"; break ;;
+    3) borrar_directorio_SIN_confirmacion ;;
+    4) borrar_directorio_confirmacion;;
+    5) echo -e "${COLOR_VERDE}Terminando Ejecucion"; break ;;
     *) echo -e "${COLOR_ROJO}Opción no válida, repita!$" ;;
   esac
 
