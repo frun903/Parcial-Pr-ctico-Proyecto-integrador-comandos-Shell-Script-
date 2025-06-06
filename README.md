@@ -19,7 +19,7 @@ crea.
 3. Borrar directorios
 4.  Manejo de errores
 
->[!TIPS] Esta pagina esta buena: https://soloconlinux.org.es/colores-en-bash/ 
+>[!TIPS] Para los colores se utilizo de referencia: https://soloconlinux.org.es/colores-en-bash/ 
 
 ## 1. Listar directorios
 Para el Listado directorios se penso en implementar dos funciones en base a donde se encuentre el usuario, la primera funcion que se implemento fue __listar_directorio_actual()__ lista y muestra por terminal los elementos del dirctorio donde se encuentre el usuario actualmente, y __listar_directorioXdireccion()__ por medio de una ruta solicitida por el usuario se listan los elementos del directorio indicado por la ruta. Ambas funciones tienen los mismo incisos o tipos de muestra
