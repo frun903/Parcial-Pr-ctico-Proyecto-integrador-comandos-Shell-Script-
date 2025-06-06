@@ -1,8 +1,10 @@
 #!/bin/bash
 
 #Declaro los Colores
-COLOR_ROJO="\e[1;31m"
-COLOR_VERDE="\e[1;32m"
+COLOR_ROJO='\e[1;31m'
+COLOR_VERDE='\e[1;32m'
+COLOR_AZUL='\e[1;34m'
+COLOR_AMA='\e[1;33m'
 
 #Declaro la negrita
 COLOR_RESET="\e[0m"
@@ -12,30 +14,37 @@ COLOR_RESET="\e[0m"
 LOGFILE="errores.log"
 
 
-# ---------------------------------------------------
+# --------------------------------------------------------------------------------------------
 # Función: log_error
 # Recive el mensae de error y lo graba usando el comando date fecha/hora en errores.log creado previamente.
-# ---------------------------------------------------
+#  uso eñ comando date para tener la fecha en: YYYY-MM-DD HH:MM:SS
+# --------------------------------------------------------------------------------------------------------------------------------
 log_error(){
     local mensaje="$1"
-    # Formato de fecha: YYYY-MM-DD HH:MM:SS
     echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: $mensaje" >> "$LOGFILE"
 }
 
 
+
+
+
+
+
+
 # --------------------------------------------------------------------------------------------------------------------------------------
 # Función: listar_directorio_actual
-# ---------------------------------------------------------------------------------------------------------------------------------------
 # Esta funcion tiene 4 opciones 
 # Listar directorio actual en linea
 # Listar directorio actual y ocultos
 # Listar directorio actual en arbol
 # Listar directorio actual en lista 
+# ---------------------------------------------------------------------------------------------------------------------------------------
+
 listar_directorio_actual(){
     clear
     while true; do
         
-        echo -e "${COLOR_ROJO}Ingrese Opciones Para listar el directorio Actual!${COLOR_RESET}"
+        echo -e "${COLOR_AMA}--Ingrese Opciones Para listar el directorio Actual!--${COLOR_RESET}"
         echo "1) Listar contenido (sin ocultos)"
         echo "2) Listar con archivos ocultos"
         echo "3) Listar en formato árbol"
@@ -45,11 +54,24 @@ listar_directorio_actual(){
         read opciones
 
         case $opciones in 
-            1) ls;;
-            2) ls -a ;;
-            3) tree ;;
-            4) ls -l;;
-            5) echo  echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"; sleep 1 ;break ;;
+            1)  ls 2> /dev/null || {
+                    log_error "Fallo al listar (ls) en directorio actual: $(pwd)"
+                    echo -e "${COLOR_ROJO}Error al listar el directorio actual.${COLOR_RESET}"
+                } ;;
+            2)  ls -a 2> /dev/null || {
+                    log_error "Fallo al listar con ocultos (ls -a) en dir actual: $(pwd)"
+                    echo -e "${COLOR_ROJO}Error al listar con archivos ocultos."
+                } ;;
+            3)  tree 2> /dev/null || {
+                    log_error "Fallo al listar en árbol (tree) en dir actual: $(pwd)"
+                    echo -e "${COLOR_ROJO}Error al mostrar árbol."
+                }
+                ;;
+            4) ls -l 2> /dev/null || {
+                    log_error "Fallo al listar en formato largo (ls -l) en dir actual: $(pwd)"
+                    echo -e "${COLOR_ROJO}Error al listar en formato largo."
+                };;
+            5) echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"; sleep 1.5 ;break ;;
             *) echo "Opción no válida, Reintente" ;break;
         esac
 
@@ -65,52 +87,65 @@ listar_directorio_actual(){
 
 # ------------------------------------------------------------------------------------------------------------------------
 # Función: listar_directorio_por_ruta
-# ------------------------------------------------------------------------------------------------------------------------
 # Esta funcion tiene las mismas 4 opciones que el anterior pero en este caso el usuario debe poner la direcccion
 # Listar directorio actual en linea
 # Listar directorio actual y ocultos
 # Listar directorio actual en arbol
 # Listar directorio actual en lista 
+# ------------------------------------------------------------------------------------------------------------------------
 
 listar_directorioXdireccion(){
      clear
-      echo "Ingrese la ruta del directorio (ENTER = actual): ${COLOR_RESET}" 
+      echo -e "${COLOR_AZUL}Ingrese la ruta del directorio (ENTER = actual): ${COLOR_RESET}" 
       read ruta
      ruta=${ruta:-.}
       #ruta de ejemplo /home/frang/Escritorio/D&D
 
       #Manejjo de errores preliminae quiero hacer un ounto log
       if [[ ! -d "$ruta" ]]; then
-          echo -e "${COLOR_ROJO}Error: '$ruta' no es un directorio valido.${COLOR_RESET}"
+          log_error "Directorio no existe para listar_directorioXdireccion(): '$ruta'"  
+          echo -e "${COLOR_ROJO}Error: '$ruta' no es un directorio valido."
           echo "ENTER para volver..." 
           read dummy
           return
       fi
 
       while true; do
-            echo -e "${COLOR_ROJO}-- Listar en '$ruta' --${COLOR_RESET}"
+            echo -e "${COLOR_AMA}-- Listar en '$ruta' --${COLOR_RESET}"
             echo "1) Listar contenido (sin ocultos)"
             echo "2) Listar con archivos ocultos"
             echo "3) Listar en formato árbol"
             echo "4) Listar en formato largo (permisos)"
             echo "5) Volver"
-            read -p "Seleccione una opción [1-5]: " opcion2
+            echo "Selecione una opcion 1 a 5: "
+            read opcion2
 
             case $opcion2 in 
-                1) ls "$ruta" ;;
-                2) ls -a "$ruta" ;;
-                3) tree "$ruta" ;;
-                4) ls -l "$ruta" ;;
+                1)  ls "$ruta" 2> /dev/null || {
+                        log_error "Fallo al listar (ls) en ruta '$ruta'"
+                        echo -e "${COLOR_ROJO}Error al listar '$ruta'.${COLOR_RESET}"
+                    } ;;
+                
+                2) ls -a "$ruta" 2> /dev/null || {
+                        log_error "Fallo al listar con ocultos (ls -a) en ruta '$ruta'"
+                        echo -e "${COLOR_ROJO}Error al listar con ocultos en '$ruta'.${COLOR_RESET}"
+                    };;
+                3) tree "$ruta" 2> /dev/null || {
+                        log_error "Fallo al listar en árbol (tree) en ruta '$ruta'"
+                        echo -e "${COLOR_ROJO}Error al mostrar árbol en '$ruta'. ¿Está instalado 'tree'?${COLOR_RESET}"
+                    };;
+                4) ls -l "$ruta" 2> /dev/null || {
+                        log_error "Fallo al listar en formato largo (ls -l) en ruta '$ruta'"
+                        echo -e "${COLOR_ROJO}Error al listar en formato largo '$ruta'.${COLOR_RESET}"
+                    };;
+
                 5) 
-                    echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"
-                    sleep 0.5
-                    break
-                    ;;
+                    echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"; sleep 1.5; break;;
                 *) echo -e "${COLOR_ROJO}Opción no válida.${COLOR_RESET}" ;;
             esac
 
-            echo
-            read -p "ENTER para continuar..." dummy
+            echo "ENTER para continuar..."
+            read dummy
             clear
       done
 }
@@ -121,7 +156,7 @@ listar_directorioXdireccion(){
 # Menu principal 
 while true; do
   clear
-  echo -e "${COLOR_ROJO}Ingrese Opciones!${COLOR_RESET}"
+  echo -e "${COLOR_AMA}Ingrese Opciones!${COLOR_RESET}"
   read opciones
 
   case $opciones in 
