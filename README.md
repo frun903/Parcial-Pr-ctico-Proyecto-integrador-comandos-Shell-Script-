@@ -32,6 +32,28 @@ El manejo de errores se mostrar adecuadamente en el insiso 4 de manejo de errore
 
 
 ## 3.Borrar directorios
+En el gestor dispones de tres funciones y un submenu especficos para borrar carpetas:
+### borrar directorio confirmacion()
+Pide al usuario la ruta de un directorio y lo elimina recursivamente con `rm -r -i`, preguntando **sí/no** por cada archivo o subdirectorio.
+  1. Lee `dir` (ruta).  
+  2. Si `dir` está vacío o no existe, registra el fallo en `errores.log` y muestra un mensaje de error.  
+  3. Si es válido, ejecuta `rm -r -i "$dir"`.  
+  4. Registra en el log y muestra un mensaje según el código de salida.  
+
+
+### borrar_directorio_SIN_confirmacion()
+Pide la ruta y la elimina recursivamente con rm -r -f, sin solicitar confirmación.
+
+
+### menu_Borrar()
+Submenú mediante el cual el usuario elige cómo borrar:
+
+- Con confirmación → llama a borrar_directorio_confirmacion()
+
+- Sin confirmación → llama a borrar_directorio_SIN_confirmacion()
+
+- Volver → regresa al menú principal
+
 
 
 ## 4.Manejo de Errores

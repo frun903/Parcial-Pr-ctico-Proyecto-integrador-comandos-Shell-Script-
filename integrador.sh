@@ -221,29 +221,31 @@ borrar_directorio_SIN_confirmacion(){
 # /home/frang/Escritorio/D&D_(otra copia)
 # /home/frang/Escritorio/D&D_(copia)
 
-
 # ----------------------------------------------------------------------------------------------
 # Función: Menu de Borrar, la verdad se me ocurrio mientras lo hacia 
 # ------------------------------------------------------------------------------------------------
 menu_Borrar(){
   clear
   echo -e "${COLOR_AZUL}-- ¿Cómo deseas borrar? --${COLOR_RESET}"
-  echo "0) Como root (PELIGRO)"
-  echo "1) Con confirmación"
-  echo "2) Sin confirmación"
+  echo "1) Con confirmación antes de borrar"
+  echo "2) Sin confirmación (borra todo sin preguntar)"
   echo "3) Volver"
+  echo "Elige opcion 0 a 3: "
   read  opt_borrar
 
   case $opt_borrar in
-    1) borrar_directorio_confirmacion ;;
-    2) borrar_directorio_SIN_confirmacion ;;
-    3) echo -e "${COLOR_VERDE} Volviendo a menu principal...${COLOR_RESET}"; sleep 1.5 ;;
-    *) echo -e "${COLOR_ROJO}Opción inválida. Volviendo...${COLOR_RESET}"
-       sleep 1.5
-       ;;
+    1)
+      borrar_directorio_confirmacion;;
+    2)
+      borrar_directorio_SIN_confirmacion;;
+    3)
+      echo -e "${COLOR_VERDE}Volviendo al menú principal...${COLOR_RESET}";
+      sleep 1;;
+    *)
+      echo -e "${COLOR_ROJO}Opción inbalida. Volviendo...${COLOR_RESET}"; sleep 1;;
   esac
-}
 
+}
 
 
 

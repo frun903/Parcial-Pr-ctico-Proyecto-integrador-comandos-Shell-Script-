@@ -2,3 +2,6 @@
 2025-06-06 06:35:11 ERROR: Directorio inbalido en borrar_directorio_SIN_confirmacion(): '/lugana/azul'
 2025-06-06 06:35:27 ERROR: Directorio inbalido en borrar_directorio_SIN_confirmacion(): '/home/frang/Escritorio/D&D (otra copia)'
 2025-06-06 06:38:06 ERROR: Directorio inbalido en borrar_directorio_SIN_confirmacion(): 'queria usar la otra opcion'
+2025-06-06 12:57:02 ERROR: Directorio no existe para listar_directorioXdireccion(): 'tomi/vive/facu'
+2025-06-06 12:57:35 ERROR: Directorio inbalido en borrar_directorio_confirmacion(): 'cualquiee o'
+2025-06-06 12:57:51 ERROR: Directorio inbalido en borrar_directorio_SIN_confirmacion(): 'no quier nada'
