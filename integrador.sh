@@ -332,16 +332,14 @@ crear_directorio(){
 
 #-----------------------------------------------------------------Soy un Pinguino que habla------------------------------------------------
 
-#-----------------------------------------------------------------
-# Soy un Pinguino que habla
-#-----------------------------------------------------------------
+
 linux_talk(){
     clear
     cowthink -f tux "$1"
     sleep 2.5
 }
 
-# Atrapa Ctrl+C para despedirte con estilo
+# Atrapa Ctrl+C esto lo vi del link
 trap '
   linux_talk "¡Oh no! Te fuiste volando…"
   sleep 1
