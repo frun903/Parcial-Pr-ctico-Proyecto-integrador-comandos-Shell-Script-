@@ -5,3 +5,5 @@
 2025-06-06 12:57:02 ERROR: Directorio no existe para listar_directorioXdireccion(): 'tomi/vive/facu'
 2025-06-06 12:57:35 ERROR: Directorio inbalido en borrar_directorio_confirmacion(): 'cualquiee o'
 2025-06-06 12:57:51 ERROR: Directorio inbalido en borrar_directorio_SIN_confirmacion(): 'no quier nada'
+2025-06-08 21:47:59 ERROR: Directorio no existe para listar_directorioXdireccion(): 'home/frang/Escritorio'
+2025-06-08 21:48:17 ERROR: Directorio no existe para listar_directorioXdireccion(): 'home/frang'

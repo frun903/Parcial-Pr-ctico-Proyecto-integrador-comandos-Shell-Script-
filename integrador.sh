@@ -330,29 +330,70 @@ crear_directorio(){
     done
 }
 
+#-----------------------------------------------------------------Soy un Pinguino que habla------------------------------------------------
 
-  clear
-  cowthink -f tux "Hola Soy Linux"
-  sleep 1.5
-  clear
-  cowthink -f tux "Te acompañare en este proyecto"  
-  sleep 1.5
-  clear
-  cowthink -f tux "Comencemos"  
+#-----------------------------------------------------------------
+# Soy un Pinguino que habla
+#-----------------------------------------------------------------
+linux_talk(){
+    clear
+    cowthink -f tux "$1"
+    sleep 2.5
+}
 
-# Menu principal 
+# Atrapa Ctrl+C para despedirte con estilo
+trap '
+  linux_talk "¡Oh no! Te fuiste volando…"
+  sleep 1
+  exit 0
+' SIGINT
+
+
+linux_talk "¡Hola, bienvenido al Gestor de Directorios!"
+linux_talk "Este es un Proyecto integrador de Fran Gomez, Tomi Ossana y Santi Planas"
+sleep 1.5
+linux_talk "¿Listo para comenzar?"
+
+
+
+#-----------------------------------------------------------------main--------------------------------------------------------------------
 while true; do
+    linux_talk "¿Qué deseas hacer hoy?"
+    echo -e "${COLOR_AMA}┌─────────────────────────────────┐${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}1)${COLOR_RESET} Listar directorio actual          ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}2)${COLOR_RESET} Listar por ruta                    ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}3)${COLOR_RESET} Crear directorio/subdirectorio     ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}4)${COLOR_RESET} Borrar directorio                  ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}5)${COLOR_RESET} Salir                              ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}└─────────────────────────────────┘${COLOR_RESET}"
+    echo -e "${COLOR_AZUL}>> Elige opcion [1-5]: ${COLOR_RESET}"
+    read opciones
 
-  echo -e "${COLOR_AMA}Ingrese Opciones!${COLOR_RESET}"
-  read opciones
-
-  case $opciones in 
-    1) listar_directorio_actual ;;
-    2) listar_directorioXdireccion ;;
-    3) menu_Borrar ;;
-    4) crear_directorio;;
-    5) echo -e "${COLOR_VERDE}Terminando Ejecucion";cowsay -f dragon "GRACIAS"; sleep 3; clear; break ;;
-    *) echo -e "${COLOR_ROJO}Opción no válida, repita!$" ;;
-  esac
-
+    case $opciones in 
+        1)
+            linux_talk "¡Vamos a listar el directorio actual!"
+            listar_directorio_actual
+            ;;
+        2)
+            linux_talk "Dime la ruta y la listare como quieres"
+            listar_directorioXdireccion
+            ;;
+        3)
+            linux_talk "¡A crear se ha dicho!"
+            crear_directorio
+            ;;
+        4)
+            linux_talk "Vamos a borrar algo... Picaron!"
+            menu_Borrar
+            ;;
+        5)
+    
+            linux_talk "¡Vuelve pronto, compañero Linux siempre estara para Ti!!"
+            sleep 1
+            break
+            ;;
+        *)
+            linux_talk "Uhh opcion inbalida. Intenta de nuevo! Se que Puedes!"
+            ;;
+    esac
 done
