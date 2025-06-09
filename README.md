@@ -92,3 +92,28 @@ La funcion *log_error* concatenada guarda lo pasado por arguemento (el mensaje d
 ```
 La combinacion `-d "$ruta"` verifica si el valor de la ruta existe combinado con el __!__ me indica _si la ruta no existe haz esto_.
 
+#### Manejo de errores en funciones de borrado
+
+Tanto `borrar_directorio_confirmacion()` como `borrar_directorio_SIN_confirmacion()` incluyen las siguientes comprobaciones y acciones de logging:
+
+**Ruta vacia**  
+```bash
+if [[ -z "$dir" ]]; then
+    log_error "Ruta vacía en <nombre_función>()"
+    echo -e "${COLOR_ROJO}No ingresaste ninguna ruta.${COLOR_RESET}"
+    return
+fi
+```
+
+Qw ocurre: si el usuario pulsa ENTER sin escribir nada eso indica el _-z del if_
+Accion: se graba un mensaje en errores.log y se muestra un aviso en rojo.
+
+**Directorio inbalido**
+```bash
+elif [[ ! -d "$dir" ]]; then
+    log_error "Directorio inválido en <nombre_función>(): '$dir'"
+    echo -e "${COLOR_ROJO}Error: '$dir' no es un directorio válido.${COLOR_RESET}"
+    return
+fi
+```
+Si la ruta no existe o no es una carpeta se registra en el log y se informa al usuario, de la misma forma que en el listar directorios

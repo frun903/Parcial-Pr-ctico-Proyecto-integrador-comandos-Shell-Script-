@@ -248,10 +248,101 @@ menu_Borrar(){
 }
 
 
+#----------------------Creacion de Directorios-----------------------------------------------------------------------
+#Como la creacion de la funcion de borrar se complejizo, decidimos hacer todo el crear direcotiorio en una sola funcion
+
+crear_directorio(){
+    clear
+    # Selecciono  la ruta ruta base ---
+    echo -e "${COLOR_AMA}Ingrese ruta de creación (ENTER = actual):${COLOR_RESET}"
+    read ruta
+    ruta=${ruta:-.}
+
+    if [[ ! -d "$ruta" ]]; then
+        log_error "Directorio base inbalido en crear_directorio(): '$ruta'"
+        echo -e "${COLOR_ROJO}Error: '$ruta' no es un directorio balido.${COLOR_RESET}"
+        read -p "ENTER para continuar..." dummy
+        return
+    fi
+
+  #Munu creacion
+    while true; do
+        clear
+        echo -e "${COLOR_AZUL}-- Crear directorio en: $ruta --${COLOR_RESET}"
+        echo "1) Directorio simple"
+        echo "2) Nombre con espacios"
+        echo "3) Varios directorios a la vez"
+        echo "4) Directorio padre/hijo (-p)"
+        echo "5) Volver"
+        echo "Seleccione opcion del 1 al 5:" 
+        read opt
+
+        case $opt in
+            1)  
+                echo "Nombre del directorio: " 
+                read nombre
+                mkdir "$ruta/$nombre" 2>/dev/null
+                ;;
+            
+            2)  
+                echo "Nombre del directorio con espacios: " 
+                read nombre
+                mkdir "$ruta/$nombre" 2>/dev/null
+                ;;
+            3) 
+                echo  "Nombres separos por espacios para guardar multi directorios"
+                read multi
+                for n in $multi; do
+                    mkdir "$ruta/$n" 2>/dev/null
+                done
+                ;;
+            4)  
+                echo "crear directorio por ruta padre/hijo (ejde uso: padre/hijo): " 
+                read rutaPH
+                mkdir -p "$ruta/$rutaPH" 2>/dev/null
+                ;;
+            5)  
+                echo -e "${COLOR_VERDE}Volviendo...${COLOR_RESET}"
+                sleep 1.5
+                break
+                ;;
+            *)  
+                echo -e "${COLOR_ROJO}Opcion inbalida.${COLOR_RESET}"
+                echo -e "${COLOR_ROJO}Volviendo...${COLOR_RESET}"
+                sleep 1.5
+                continue
+                ;;
+        esac
+
+        # Manejo de errores
+        # $? es la variable que guarda el codigo de salida del último comando en este caso el mkdir
+        # es 0 si salio todo bien
+        # si es otra cosa hubo error, en el caso de haya error lo guarde con el log error (para esta aplicacion no se guarda que error hubo solo que hubo error es disinto al listar directorio donde si lo hacia)
+        if [[ $? -eq 0 ]]; then
+            echo -e "${COLOR_VERDE}Directorio(s) creado(s) correctamente en '$ruta'.${COLOR_RESET}"
+        else
+            log_error "Fallo al crear directorio(s) en crear_directorio(), opcion $opt, en ruta '$ruta'"
+            echo -e "${COLOR_ROJO}Error al crear directorio(s). Revisa errores.log.${COLOR_RESET}"
+        fi
+
+        echo "ENTER para continuar..."
+        read dummy
+    done
+}
+
+
+  clear
+  cowthink -f tux "Hola Soy Linux"
+  sleep 1.5
+  clear
+  cowthink -f tux "Te acompañare en este proyecto"  
+  sleep 1.5
+  clear
+  cowthink -f tux "Comencemos"  
 
 # Menu principal 
 while true; do
-  clear
+
   echo -e "${COLOR_AMA}Ingrese Opciones!${COLOR_RESET}"
   read opciones
 
@@ -259,8 +350,8 @@ while true; do
     1) listar_directorio_actual ;;
     2) listar_directorioXdireccion ;;
     3) menu_Borrar ;;
-    4) borrar_directorio_confirmacion;;
-    5) echo -e "${COLOR_VERDE}Terminando Ejecucion"; break ;;
+    4) crear_directorio;;
+    5) echo -e "${COLOR_VERDE}Terminando Ejecucion";cowsay -f dragon "GRACIAS"; sleep 3; clear; break ;;
     *) echo -e "${COLOR_ROJO}Opción no válida, repita!$" ;;
   esac
 
