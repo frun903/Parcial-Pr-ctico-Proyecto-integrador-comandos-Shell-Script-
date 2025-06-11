@@ -15,8 +15,8 @@ COLOR_RESET="\e[0m"
 
 
 #Declaro donde esta el errores.log
-LOGFILE="errores.log"
-
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" #ests linea es clave ya que redireccciona el error 
+LOGFILE="$SCRIPT_DIR/errores.log"
 
 
 
@@ -66,11 +66,13 @@ listar_directorio_actual(){
     while true; do
         
         echo -e "${COLOR_AMA}--Ingrese Opciones Para listar el directorio Actual!--${COLOR_RESET}"
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
         echo "1) Listar contenido (sin ocultos)"
         echo "2) Listar con archivos ocultos"
         echo "3) Listar en formato árbol"
         echo "4) Listar en formato largo (y con permisos)"
         echo "5) Volver"
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
         echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
         read opciones
 
@@ -132,12 +134,14 @@ listar_directorioXdireccion(){
       fi
 
       while true; do
-            echo -e "${COLOR_AMA}-- Listar en '$ruta' --${COLOR_RESET}"
-            echo "1) Listar contenido (sin ocultos)"
-            echo "2) Listar con archivos ocultos"
-            echo "3) Listar en formato árbol"
-            echo "4) Listar en formato largo (permisos)"
+            echo -e "${COLOR_C}-- Listar en '$ruta' --${COLOR_RESET}"
+            echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
+            echo "1) Listar todo el contenido (sin ocultos)"
+            echo "2) Listar todo el contenido con archivos ocultos"
+            echo "3) Listar todo el contenido en formato árbol"
+            echo "4) Listar todo el contenido en formato largo (permisos)"
             echo "5) Volver"
+            echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
             echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
             read opcion2
 
@@ -269,12 +273,108 @@ menu_Borrar(){
 }
 
 
-#----------------------Creacion de Directorios-----------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------
+# Creacion directorios en directorio actual
 #Como la creacion de la funcion de borrar se complejizo, decidimos hacer todo el crear direcotiorio en una sola funcion
-
+#----------------------------------------------------------------------------------------------
 crear_directorio(){
+  
+  #Munu creacion
+    while true; do
+        clear
+        linux_talk "A Crear !"
+        AQUI="$(pwd)"
+        echo -e "${COLOR_CYAN}Usted esta aqui: $AQUI --${COLOR_RESET}"
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
+        echo "0) Navegavegacion"
+        echo "1) Directorio simple"
+        echo "2) Nombre con espacios"
+        echo "3) Varios directorios a la vez"
+        echo "4) Directorio padre/hijo (-p)"
+        echo "5) Listado de directorios disponibles"
+        echo "6) Volver"
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
+        echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
+        read opt
+
+        case $opt in
+            0) 
+               navegacion
+               continue;; 
+
+            1)  
+                echo "Nombre del directorio: " 
+                read nombre
+                mkdir "$nombre" 2>/dev/null
+                ;;
+            
+            2)  
+                echo "Nombre del directorio con espacios: " 
+                read nombre
+                mkdir "$nombre" 2>/dev/null
+                ;;
+            3) 
+                echo  "Nombres separos por espacios para guardar multi directorios"
+                read multi
+                for n in $multi; do
+                    mkdir "$n" 2>/dev/null
+                done
+                ;;
+            4)  
+                echo "crear directorio por ruta padre/hijo (ejde uso: padre/hijo): " 
+                read rutaPH
+                mkdir -p "$AQUI/$rutaPH" 2>/dev/null
+                ;;
+            
+            5)  
+                echo -e "${COLOR_AMA}Directorios disponibles ${COLOR_RESET}"
+                find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$'
+                echo "press enter para continuar"
+                read dummy 
+                continue
+                ;;
+            
+            6)  
+                echo -e "${COLOR_VERDE}Volviendo...${COLOR_RESET}"
+                sleep 1.5
+                break
+                ;;
+            *)  
+                echo -e "${COLOR_ROJO}Opcion inbalida.${COLOR_RESET}"
+                echo -e "${COLOR_ROJO}Volviendo...${COLOR_RESET}"
+                sleep 1.5
+                continue
+                ;;
+        esac
+
+        # Manejo de errores
+        # $? es la variable que guarda el codigo de salida del último comando en este caso el mkdir
+        # es 0 si salio todo bien
+        # si es otra cosa hubo error, en el caso de haya error lo guarde con el log error (para esta aplicacion no se guarda que error hubo solo que hubo error es disinto al listar directorio donde si lo hacia)
+        if [[ $? -eq 0 ]]; then
+            echo -e "${COLOR_VERDE}Directorio(s) creado(s) correctamente en '$ruta'.${COLOR_RESET}"
+        else
+            log_error "Fallo al crear directorio(s) en crear_directorio(), opcion $opt, en ruta '$ruta'"
+            echo -e "${COLOR_ROJO}Error al crear directorio(s). Revisa errores.log.${COLOR_RESET}"
+        fi
+
+        echo "ENTER para continuar..."
+        read dummy
+    done
+}
+
+
+
+#---------------------------------------------------------------------------------------------
+# Creacion de directorios por ruta 
+#Como la creacion de la funcion de borrar se complejizo, decidimos hacer todo el crear direcotiorio en una sola funcion
+#----------------------------------------------------------------------------------------------
+
+crear_directorio_ruta(){
+    linux_talk "A Crear! Escribi bien la ruta!"
     clear
     # Selecciono  la ruta ruta base ---
+    linux_talk "A Crear con Ruta Absoluta!"
     echo -e "${COLOR_AMA}Ingrese ruta de creación (ENTER = actual):${COLOR_RESET}"
     read ruta
     ruta=${ruta:-.}
@@ -356,15 +456,16 @@ crear_directorio(){
 # Navegacion a pedido del docente se hace un apartado de navegacion entre directorios. La funcion navegacion permite
 # Ver el directorio actual, ir al directorio anterior o uno mas interno. 
 navegacion(){
-    linux_talk "¡A mudarnos!"
     local opt
-
     while true; do
         # Actualiza el directorio actual
+        
         AQUI="$(pwd)"
         clear
+        linux_talk "Navegacion"
         echo -e "${COLOR_CYAN}Usted está en: ${COLOR_RESET}$AQUI"
-        echo
+        echo 
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
         echo "Opciones:"
         echo "  0) Seleccionar este directorio"
         echo "  1) Subir al directorio padre"
@@ -373,7 +474,7 @@ navegacion(){
         echo " *) Subdirectorios disponibles:"
         find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$'
         echo
-
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
         read -p "Elige [0,1,2 o nombre de subdirectorio]: " opt
         case "$opt" in
             0)
@@ -438,16 +539,18 @@ AQUI=$(pwd)
 while true; do
     linux_talk "¿Qué deseas hacer hoy?"
     echo -e "${COLOR_CYAN} Usted esta: $AQUI ${COLOR_RESET}"
-    echo -e "${COLOR_AMA}┌─────────────────────────────────┐${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}0)${COLOR_RESET} Navegacion                         ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}1)${COLOR_RESET} Listar directorio actual           ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}2)${COLOR_RESET} Listar por ruta                    ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}3)${COLOR_RESET} Crear directorio/subdirectorio     ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}4)${COLOR_RESET} Borrar directorio                  ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}5)${COLOR_RESET} Ver Errores                        ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}6)${COLOR_RESET} Salir                              ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}└─────────────────────────────────┘${COLOR_RESET}"
-    echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
+    echo -e "${COLOR_AMA}┌───────────────────────────────────────────────────────────────────┐${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}0)${COLOR_RESET} Navegacion                            ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}1)${COLOR_RESET} Listar directorio actual              ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}2)${COLOR_RESET} Crear en directorio Actual            ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}3)${COLOR_RESET} Borrar en directorio Acutal           ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}4)${COLOR_RESET} Listar por ruta absoluta              ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}5)${COLOR_RESET} Crear directorio¿ por ruta absoluta   ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}6)${COLOR_RESET} Borrar directorio por ruta absoluta   ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}7)${COLOR_RESET} Ver Errores                           ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}8)${COLOR_RESET} Salir                                 ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}└────────────────────────────────────────────────────────────────────┘${COLOR_RESET}"
+    echo -e "${COLOR_MAGENTA}>> Elige opcion [1-8]: ${COLOR_RESET}"
     read opciones
 
     case $opciones in 
@@ -455,6 +558,7 @@ while true; do
             
             AQUI=$(pwd)
             linux_talk "Tu estas $AQUI!"
+            linux_talk " A mudarnos!"
             navegacion
             ;;
 
@@ -486,9 +590,12 @@ while true; do
             sleep 1
             break
             ;;
-        
-        *)
-            linux_talk "Uhh opcion inbalida. Intenta de nuevo! Se que Puedes!"
+        #7);;
+        #8);;
+
+        *)  
+            
+            linux_talk "Opcion Inbalida! No me... Paciencia.."
             ;;
     esac
 done
