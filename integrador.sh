@@ -1,10 +1,14 @@
 #!/bin/bash
 
-#Declaro los Colores
-COLOR_ROJO='\e[1;31m'
-COLOR_VERDE='\e[1;32m'
-COLOR_AZUL='\e[1;34m'
-COLOR_AMA='\e[1;33m'
+#Declaro los Colores    
+COLOR_ROJO='\e[1;31m'        # Rojo basico
+COLOR_VERDE='\e[1;32m'       #Verde comun   
+COLOR_AZUL='\e[1;34m'       #este axul resulto muy opaco
+COLOR_AMA='\e[1;33m'        #Amarillo
+COLOR_CYAN='\e[1;36m'      # Celeste 
+COLOR_MAGENTA='\e[1;35m'   # Magenta o fucsia
+COLOR_GRIS='\e[1;90m'      # Gris claro 
+
 
 #Declaro la negrita
 COLOR_RESET="\e[0m"
@@ -12,6 +16,8 @@ COLOR_RESET="\e[0m"
 
 #Declaro donde esta el errores.log
 LOGFILE="errores.log"
+
+
 
 
 # --------------------------------------------------------------------------------------------
@@ -25,6 +31,21 @@ log_error(){
 }
 
 
+#------------------------------------------------------------------------------------------------------
+#Funcion: ver_errores.log
+#Esta funcion hace CAT para los elementos de log creados c/d ves que ocurre un error
+ver_errores(){
+    echo -e "${COLOR_AMA}--¡Registro de Errores!--${COLOR_RESET}"
+    
+    if [[ -s "$LOGFILE" ]]; then      # -s => el archivo existe y no está vacío
+        cat "$LOGFILE"
+    else
+        echo -e "${COLOR_VERDE}No hay errores registrados por ahora. ¡Todo bien!${COLOR_RESET}"
+    fi
+    
+    echo "ENTER para continuar..."
+    read dummy
+}
 
 
 
@@ -50,7 +71,7 @@ listar_directorio_actual(){
         echo "3) Listar en formato árbol"
         echo "4) Listar en formato largo (y con permisos)"
         echo "5) Volver"
-        echo "Selecione una opcion 1 a 5: "
+        echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
         read opciones
 
         case $opciones in 
@@ -117,7 +138,7 @@ listar_directorioXdireccion(){
             echo "3) Listar en formato árbol"
             echo "4) Listar en formato largo (permisos)"
             echo "5) Volver"
-            echo "Selecione una opcion 1 a 5: "
+            echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
             read opcion2
 
             case $opcion2 in 
@@ -230,7 +251,7 @@ menu_Borrar(){
   echo "1) Con confirmación antes de borrar"
   echo "2) Sin confirmación (borra todo sin preguntar)"
   echo "3) Volver"
-  echo "Elige opcion 0 a 3: "
+  echo -e "${COLOR_MAGENTA}>> Elige opcion [1-3]: ${COLOR_RESET}"
   read  opt_borrar
 
   case $opt_borrar in
@@ -274,7 +295,7 @@ crear_directorio(){
         echo "3) Varios directorios a la vez"
         echo "4) Directorio padre/hijo (-p)"
         echo "5) Volver"
-        echo "Seleccione opcion del 1 al 5:" 
+        echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
         read opt
 
         case $opt in
@@ -330,6 +351,64 @@ crear_directorio(){
     done
 }
 
+
+#----------------------------------------------------------------------------------------------------------------------------------------
+# Navegacion a pedido del docente se hace un apartado de navegacion entre directorios. La funcion navegacion permite
+# Ver el directorio actual, ir al directorio anterior o uno mas interno. 
+navegacion(){
+    linux_talk "¡A mudarnos!"
+    local opt
+
+    while true; do
+        # Actualiza el directorio actual
+        AQUI="$(pwd)"
+        clear
+        echo -e "${COLOR_CYAN}Usted está en: ${COLOR_RESET}$AQUI"
+        echo
+        echo "Opciones:"
+        echo "  0) Seleccionar este directorio"
+        echo "  1) Subir al directorio padre"
+        echo "  2) Subir 2 niveles hacia atrás"
+        echo
+        echo " *) Subdirectorios disponibles:"
+        find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$'
+        echo
+
+        read -p "Elige [0,1,2 o nombre de subdirectorio]: " opt
+        case "$opt" in
+            0)
+                TARGET_DIR="$AQUI"
+                sleep 0.2
+                echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"
+                sleep 1
+                break
+                ;;
+            1)
+                cd .. || { echo -e "${COLOR_ROJO}No pude subir.${COLOR_RESET}"; sleep 1; }
+                ;;
+            2)
+                cd ../.. || { echo -e "${COLOR_ROJO}No pude subir dos niveles.${COLOR_RESET}"; sleep 1; }
+                ;;
+            *)
+                if [[ -z "$opt" ]]; then
+                    log_error "Opción vacía en navegacion()"
+                    echo -e "${COLOR_ROJO}No ingresaste ninguna opción.${COLOR_RESET}"
+                elif [[ -d "$opt" ]]; then
+                    cd "$opt"
+                else
+                    log_error "Opción inválida en navegacion(): '$opt'"
+                    echo -e "${COLOR_ROJO}“$opt” no es un subdirectorio válido.${COLOR_RESET}"
+                fi
+                sleep 1
+                ;;
+        esac
+    done
+}
+
+
+
+
+
 #-----------------------------------------------------------------Soy un Pinguino que habla------------------------------------------------
 
 
@@ -347,27 +426,39 @@ trap '
 ' SIGINT
 
 
-linux_talk "¡Hola, bienvenido al Gestor de Directorios!"
-linux_talk "Este es un Proyecto integrador de Fran Gomez, Tomi Ossana y Santi Planas"
-sleep 1.5
-linux_talk "¿Listo para comenzar?"
+#linux_talk "¡Hola, bienvenido al Gestor de Directorios!"
+#linux_talk "Este es un Proyecto integrador de Fran Gomez, Tomi Ossana y Santi Planas"
+#sleep 1.5
+#linux_talk "¿Listo para comenzar?"
+AQUI=$(pwd)
 
 
 
 #-----------------------------------------------------------------main--------------------------------------------------------------------
 while true; do
     linux_talk "¿Qué deseas hacer hoy?"
+    echo -e "${COLOR_CYAN} Usted esta: $AQUI ${COLOR_RESET}"
     echo -e "${COLOR_AMA}┌─────────────────────────────────┐${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}1)${COLOR_RESET} Listar directorio actual          ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}0)${COLOR_RESET} Navegacion                         ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}1)${COLOR_RESET} Listar directorio actual           ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}2)${COLOR_RESET} Listar por ruta                    ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}3)${COLOR_RESET} Crear directorio/subdirectorio     ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}4)${COLOR_RESET} Borrar directorio                  ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}5)${COLOR_RESET} Salir                              ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}5)${COLOR_RESET} Ver Errores                        ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}6)${COLOR_RESET} Salir                              ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}└─────────────────────────────────┘${COLOR_RESET}"
-    echo -e "${COLOR_AZUL}>> Elige opcion [1-5]: ${COLOR_RESET}"
+    echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
     read opciones
 
     case $opciones in 
+        0)
+            
+            AQUI=$(pwd)
+            linux_talk "Tu estas $AQUI!"
+            navegacion
+            ;;
+
+
         1)
             linux_talk "¡Vamos a listar el directorio actual!"
             listar_directorio_actual
@@ -385,11 +476,17 @@ while true; do
             menu_Borrar
             ;;
         5)
-    
-            linux_talk "¡Vuelve pronto, compañero Linux siempre estara para Ti!!"
+            linux_talk "Ahh como la cagaste, recordemos tus errores"
+            ver_errores
+            ;;
+         
+        6)
+           
+           linux_talk "¡Vuelve pronto, compañero Linux siempre estara para Ti!!"
             sleep 1
             break
             ;;
+        
         *)
             linux_talk "Uhh opcion inbalida. Intenta de nuevo! Se que Puedes!"
             ;;

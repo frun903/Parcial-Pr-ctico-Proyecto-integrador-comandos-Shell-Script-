@@ -7,3 +7,9 @@
 2025-06-06 12:57:51 ERROR: Directorio inbalido en borrar_directorio_SIN_confirmacion(): 'no quier nada'
 2025-06-08 21:47:59 ERROR: Directorio no existe para listar_directorioXdireccion(): 'home/frang/Escritorio'
 2025-06-08 21:48:17 ERROR: Directorio no existe para listar_directorioXdireccion(): 'home/frang'
+2025-06-08 21:59:24 ERROR: Directorio base inbalido en crear_directorio(): 'khklkblkb'
+2025-06-08 21:59:58 ERROR: Directorio no existe para listar_directorioXdireccion(): 'jhjkh'
+2025-06-09 19:23:10 ERROR: Directorio inbalido en borrar_directorio_SIN_confirmacion(): '/home/frang/Escritorio/Roza'
+2025-06-11 07:37:28 ERROR: Opción inválida en navegacion(): 'casamento'
+2025-06-11 07:37:35 ERROR: Opción inválida en navegacion(): 'lucasssss'
+2025-06-11 07:37:37 ERROR: Opción vacía en navegacion()
