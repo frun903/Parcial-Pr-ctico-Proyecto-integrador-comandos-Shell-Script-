@@ -59,24 +59,30 @@ ver_errores(){
 # Listar directorio actual y ocultos
 # Listar directorio actual en arbol
 # Listar directorio actual en lista 
+# Listar solamente directorios 
 # ---------------------------------------------------------------------------------------------------------------------------------------
 
 listar_directorio_actual(){
-    clear
     while true; do
-        
+        clear
+        linux_talk "Listar Directorios!"
         echo -e "${COLOR_AMA}--Ingrese Opciones Para listar el directorio Actual!--${COLOR_RESET}"
         echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
-        echo "1) Listar contenido (sin ocultos)"
-        echo "2) Listar con archivos ocultos"
-        echo "3) Listar en formato árbol"
-        echo "4) Listar en formato largo (y con permisos)"
-        echo "5) Volver"
+        echo "0) Navegacion"
+        echo "1) Listar todo contenido (sin ocultos)"
+        echo "2) Listar todo contenido con archivos ocultos"
+        echo "3) Listar todo el contendio en formato árbol"
+        echo "4) Listar todo el contenido en formato largo (y con permisos)"
+        echo "5) Listar solamente directorios (sin archivos regulares) --Funes--"
+        echo "6) Volver"
         echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
-        echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
+        echo -e "${COLOR_MAGENTA}>> Elige opcion [0-6]: ${COLOR_RESET}"
         read opciones
 
         case $opciones in 
+            0)  navegacion
+               continue;;
+            
             1)  ls 2> /dev/null || {
                     log_error "Fallo al listar (ls) en directorio actual: $(pwd)"
                     echo -e "${COLOR_ROJO}Error al listar el directorio actual.${COLOR_RESET}"
@@ -94,7 +100,12 @@ listar_directorio_actual(){
                     log_error "Fallo al listar en formato largo (ls -l) en dir actual: $(pwd)"
                     echo -e "${COLOR_ROJO}Error al listar en formato largo."
                 };;
-            5) echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"; sleep 1.5 ;break ;;
+            5)  
+                echo -e "${COLOR_AMA}Directorios disponibles ${COLOR_RESET}"
+                find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$' ;;
+
+
+            6) echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"; sleep 1.5 ;break ;;
             *) echo "Opción no válida, Reintente" ;break;
         esac
 
@@ -118,7 +129,7 @@ listar_directorio_actual(){
 # ------------------------------------------------------------------------------------------------------------------------
 
 listar_directorioXdireccion(){
-     clear
+     
       echo -e "${COLOR_AZUL}Ingrese la ruta del directorio (ENTER = actual): ${COLOR_RESET}" 
       read ruta
      ruta=${ruta:-.}
@@ -134,13 +145,16 @@ listar_directorioXdireccion(){
       fi
 
       while true; do
+            clear
+            linux_talk "Direcotorios por ruta Absoluta"
             echo -e "${COLOR_C}-- Listar en '$ruta' --${COLOR_RESET}"
             echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
             echo "1) Listar todo el contenido (sin ocultos)"
             echo "2) Listar todo el contenido con archivos ocultos"
             echo "3) Listar todo el contenido en formato árbol"
             echo "4) Listar todo el contenido en formato largo (permisos)"
-            echo "5) Volver"
+            echo "5) Listar solo directorios --Funes--"
+            echo "6) Volver"
             echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
             echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
             read opcion2
@@ -165,6 +179,10 @@ listar_directorioXdireccion(){
                     };;
 
                 5) 
+                    echo -e "${COLOR_AMA}Directorios disponibles ${COLOR_RESET}"
+                    find "$ruta" -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null \ | grep -vE '^\.\/?$' ;;
+
+                6) 
                     echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"; sleep 1.5; break;;
                 *) echo -e "${COLOR_ROJO}Opción no válida.${COLOR_RESET}" ;;
             esac
@@ -249,9 +267,11 @@ borrar_directorio_SIN_confirmacion(){
 # ----------------------------------------------------------------------------------------------
 # Función: Menu de Borrar, la verdad se me ocurrio mientras lo hacia 
 # ------------------------------------------------------------------------------------------------
-menu_Borrar(){
+menu_Borrar_direccion(){
   clear
-  echo -e "${COLOR_AZUL}-- ¿Cómo deseas borrar? --${COLOR_RESET}"
+  linux_talk "A Borrar!"
+    
+  echo -e "${COLOR_CYAN}-- ¿Cómo deseas borrar? --${COLOR_RESET}"
   echo "1) Con confirmación antes de borrar"
   echo "2) Sin confirmación (borra todo sin preguntar)"
   echo "3) Volver"
@@ -273,6 +293,192 @@ menu_Borrar(){
 }
 
 
+# --------------------------------------------------------------------------------
+# NUEVO BORRAR
+# --------------------------------------------------------------------------------
+# Función: borrar_actual_con_confirm
+# - Pide al usuario el nombre de un subdirectorio en $PWD
+# - Borra recursivamente con -i (pregunta y/n por cada archivo/subcarpeta)
+# --------------------------------------------------------------------------------
+borrar_actual_con_confirm(){
+    echo -e "${COLOR_AZUL}Ingrese nombre de Archivo a borrar (en $(pwd)).${COLOR_RESET}"
+    read dir
+
+    if [[ -z "$dir" ]]; then
+        log_error "Ruta vacia en borrar_directorio"
+        echo -e "${COLOR_ROJO}No ingresaste ningún nombre.${COLOR_RESET}"
+        sleep 1.5
+        return
+    
+    elif [[ ! -d "$dir" ]]; then
+        log_error "Intento de borrar (con confirm) NO dir válido: '$PWD/$dir'"
+        echo -e "${COLOR_ROJO}'$dir' no existe o no es un directorio.${COLOR_RESET}"
+        sleep 1.5
+        return    
+    else
+        echo -e "${COLOR_AZUL}Borrado con confirmación de '$dir'...${COLOR_RESET}"
+        rm -r -i "$dir"  
+        sleep 1.5
+        return
+   fi
+
+    
+   #Menajse post borrar 
+    if [[ $? -eq 0 ]]; then
+        echo -e "${COLOR_VERDE}Directorio '$dir' borrado correctamente.${COLOR_RESET}"
+    else
+        log_error "Fallo al borrar con -i: '$PWD/$dir'"
+        echo -e "${COLOR_ROJO}No se completó el borrado de '$dir'.${COLOR_RESET}"
+    fi
+
+    echo "ENTER para continuar..."
+    read dummy
+}
+
+
+# --------------------------------------------------------------------------------
+# Función: borrar_actual_sin_confirm
+# - Pide al usuario el nombre de un subdirectorio en $PWD
+# - Borra recursivamente con -f (sin preguntar)
+# --------------------------------------------------------------------------------
+borrar_actual_sin_confirm(){
+    
+    echo -e "${COLOR_AZUL}Ingrese nombre de Archivo a borrar (en $(pwd)).${COLOR_RESET}"
+    read dir
+
+    if [[ -z "$dir" ]]; then
+        echo -e "${COLOR_ROJO}No ingresaste ningún nombre.${COLOR_RESET}"
+        log_error "Usuario no ingreso cadena vacia"
+        sleep 1.5
+        return
+    
+
+    elif [[ ! -d "$dir" ]]; then
+        log_error "Intento de borrar (sin confirm) NO dir válido: '$PWD/$dir'"
+        echo -e "${COLOR_ROJO}'$dir' no existe o no es un directorio.${COLOR_RESET}"
+        sleep 1.5
+        return
+    else
+
+        echo -e "${COLOR_ROJO}¡PELIGRO! Borrado forzado de '$dir'... ATENCION${COLOR_RESET}"
+        rm -r -f "$dir" 2>/dev/null
+        sleep 1.5
+        return
+    fi
+
+
+    if [[ $? -eq 0 ]]; then
+        echo -e "${COLOR_VERDE}Directorio '$dir' eliminado sin confirmacion.${COLOR_RESET}"
+    else
+        log_error "Fallo al borrar con -f: '$PWD/$dir'"
+        echo -e "${COLOR_ROJO}No se completo el borrado de '$dir'.${COLOR_RESET}"
+    fi
+
+    echo "ENTER para continuar..."
+    read dummy
+}
+
+
+# -------------------------------------------------------------------------------
+# Función: rmdir_actual
+# Elimina un subdirectorio VACÍO en el directorio actual ($PWD) sin confirmación.
+# -------------------------------------------------------------------------------
+rmdir_actual(){
+    local dir="$1"
+
+    read -p "Nombre del subdirectorio vacío a eliminar (en $(pwd)): " dir
+    
+
+    if [[ -z "$dir" ]]; then
+        echo -e "${COLOR_ROJO}No ingresaste ningún nombre.${COLOR_RESET}"
+         log_error "rmdir_no_confirm: '$dir' no existe o no es un directorio"
+         sleep 1.5
+         return
+
+    elif [[ ! -d "$dir" ]]; then
+        log_error "rmdir_no_confirm: '$dir' no existe o no es un directorio"
+        echo -e "${COLOR_ROJO}'$dir' no existe o no es un directorio.${COLOR_RESET}"
+        sleep 1.5
+        return
+    elif [[ -n "$(ls -A "$dir" 2>/dev/null)" ]]; then
+        log_error "rmdir_no_confirm: '$dir' no está vacío"
+        echo -e "${COLOR_ROJO}'$dir' no está vacío.${COLOR_RESET}"
+        sleep 1.5
+        return
+    else
+
+     # Sin confirmación
+        rmdir "$dir" 2>/dev/null
+
+    fi
+
+    if [[ $? -eq 0 ]]; then
+        echo -e "${COLOR_VERDE}Directorio '$dir' eliminado sin confirmación.${COLOR_RESET}"
+    else
+        log_error "rmdir_no_confirm: fallo al eliminar '$dir'"
+        echo -e "${COLOR_ROJO}Error al eliminar '$dir'.${COLOR_RESET}"
+    fi
+
+    echo "ENTER para continuar..."
+    read dummy
+}
+
+# Ultimo menu
+menu_borrar_directorio_actual(){
+    while true; do
+        clear
+        linux_talk "A borrar!"
+        echo -e "${COLOR_CYAN}Borrar sobre Directorio Actual $(pwd)${COLOR_RESET}"
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
+        echo -e "${COLOR_AMA}0)${COLOR_RESET} Navegacion"
+        echo -e "${COLOR_AMA}1)${COLOR_RESET} Listar subdirectorioes en pocision actual"
+        echo -e "${COLOR_AMA}2)${COLOR_RESET} Eliminar subdirectorio vacío (rmdir)"
+        echo -e "${COLOR_AMA}3)${COLOR_RESET} Borrar directorio con confirmación$"
+        echo -e "${COLOR_AMA}4)${COLOR_RESET} Borrar directorio sin confirmación"
+        echo -e "${COLOR_AMA}5)${COLOR_RESET} Volver"
+        echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
+        read -p "$(echo -e ${COLOR_MAGENTA}">> Elige opción [0-5]: "${COLOR_RESET})" opt
+  
+
+        case $opt in
+            0)
+                navegacion
+                ;;
+            1)
+                find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$'
+                echo "enter para continuar..."
+                read dummy
+                continue 
+                ;;
+            2)  
+                      echo -e "${COLOR_AZUL} Archivos disponibles para eliminiacion ${COLOR_RESET}"
+                     find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$'
+                    rmdir_actual
+                ;;
+            3)  
+                    echo -e "${COLOR_AZUL} Archivos disponibles para eliminiacion ${COLOR_RESET}"
+                    find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$'
+                 borrar_actual_con_confirm
+                ;;
+            4)
+                echo -e "${COLOR_AZUL} Archivos disponibles para eliminiacion ${COLOR_RESET}"
+                find . -maxdepth 1 -type d -printf '%f/\n' 2>/dev/null | grep -vE '^\.\/?$'
+                borrar_actual_sin_confirm
+                ;;
+            5)
+                echo -e "${COLOR_VERDE}Regresando...${COLOR_RESET}"
+                sleep 1
+                break
+                ;;
+            *)
+                echo -e "${COLOR_ROJO}Opción inbalida.${COLOR_RESET}"
+                sleep 1
+                ;;
+        esac
+    done
+}
+
+
 #---------------------------------------------------------------------------------------------
 # Creacion directorios en directorio actual
 #Como la creacion de la funcion de borrar se complejizo, decidimos hacer todo el crear direcotiorio en una sola funcion
@@ -291,7 +497,7 @@ crear_directorio(){
         echo "2) Nombre con espacios"
         echo "3) Varios directorios a la vez"
         echo "4) Directorio padre/hijo (-p)"
-        echo "5) Listado de directorios disponibles"
+        echo "5) Listado de directorios disponibles "
         echo "6) Volver"
         echo -e "${COLOR_AMA}───────────────────────────────────────────────────────────────────${COLOR_RESET}"
         echo -e "${COLOR_MAGENTA}>> Elige opcion [1-5]: ${COLOR_RESET}"
@@ -516,21 +722,23 @@ navegacion(){
 linux_talk(){
     clear
     cowthink -f tux "$1"
-    sleep 2.5
+    sleep 1.5
 }
 
 # Atrapa Ctrl+C esto lo vi del link
 trap '
-  linux_talk "¡Oh no! Te fuiste volando…"
+  linux_talk "Se escapa, Atrapenlo"
   sleep 1
   exit 0
 ' SIGINT
 
 
-#linux_talk "¡Hola, bienvenido al Gestor de Directorios!"
-#linux_talk "Este es un Proyecto integrador de Fran Gomez, Tomi Ossana y Santi Planas"
+#linux_talk "¡Hola, bienvenido al Gestor de Archivos y Directorios!"
+#sleep 0.6
+#linux_talk "Este es un Proyecto integrador del equipo Fran Gomez, Tomi Ossana y Santi Planas"
 #sleep 1.5
 #linux_talk "¿Listo para comenzar?"
+clear
 AQUI=$(pwd)
 
 
@@ -545,7 +753,7 @@ while true; do
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}2)${COLOR_RESET} Crear en directorio Actual            ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}3)${COLOR_RESET} Borrar en directorio Acutal           ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}4)${COLOR_RESET} Listar por ruta absoluta              ${COLOR_AMA}│${COLOR_RESET}"
-    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}5)${COLOR_RESET} Crear directorio¿ por ruta absoluta   ${COLOR_AMA}│${COLOR_RESET}"
+    echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}5)${COLOR_RESET} Crear directorio por ruta absoluta   ${COLOR_AMA} │${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}6)${COLOR_RESET} Borrar directorio por ruta absoluta   ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}7)${COLOR_RESET} Ver Errores                           ${COLOR_AMA}│${COLOR_RESET}"
     echo -e "${COLOR_AMA}│${COLOR_RESET} ${COLOR_VERDE}8)${COLOR_RESET} Salir                                 ${COLOR_AMA}│${COLOR_RESET}"
@@ -557,8 +765,8 @@ while true; do
         0)
             
             AQUI=$(pwd)
-            linux_talk "Tu estas $AQUI!"
-            linux_talk " A mudarnos!"
+            linux_talk "Tu estas $AQUI pero vamos a movernos!"
+            sleep 0.5
             navegacion
             ;;
 
@@ -568,30 +776,34 @@ while true; do
             listar_directorio_actual
             ;;
         2)
-            linux_talk "Dime la ruta y la listare como quieres"
-            listar_directorioXdireccion
-            ;;
-        3)
             linux_talk "¡A crear se ha dicho!"
             crear_directorio
             ;;
-        4)
-            linux_talk "Vamos a borrar algo... Picaron!"
-            menu_Borrar
+        3)
+            menu_borrar_directorio_actual
             ;;
-        5)
-            linux_talk "Ahh como la cagaste, recordemos tus errores"
-            ver_errores
+        4)
+            listar_directorioXdireccion
+            ;;
+        5)  
+            crear_directorio_ruta
             ;;
          
         6)
+           linux_talk "Vamos a borrar algo... Picaron!"
+            menu_Borrar_direccion
+            ;;
            
-           linux_talk "¡Vuelve pronto, compañero Linux siempre estara para Ti!!"
+        7)  
+            linux_talk "Ahh como la cagaste, recordemos tus errores"
+            ver_errores;;
+        
+        8)  
+            linux_talk "¡Vuelve pronto, compañero Linux siempre estara para Ti!!"
             sleep 1
             break
             ;;
-        #7);;
-        #8);;
+
 
         *)  
             
