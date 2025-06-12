@@ -733,11 +733,12 @@ trap '
 ' SIGINT
 
 
-#linux_talk "¡Hola, bienvenido al Gestor de Archivos y Directorios!"
-#sleep 0.6
-#linux_talk "Este es un Proyecto integrador del equipo Fran Gomez, Tomi Ossana y Santi Planas"
-#sleep 1.5
-#linux_talk "¿Listo para comenzar?"
+linux_talk "¡Hola, bienvenido al Gestor de Archivos y Directorios!"
+sleep 2.5
+linux_talk "Este es un Proyecto integrador del equipo Fran Gomez, Tomi Ossana y Santi Planas"
+sleep 2.5
+linux_talk "¿Listo para comenzar?"
+sleep 2.5
 clear
 AQUI=$(pwd)
 
