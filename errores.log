@@ -4,3 +4,11 @@
 2025-06-12 10:16:08 ERROR: rmdir_no_confirm: '/home/frang/Escritorio/Sistemas Operativos UCC/Parcial-Pr-ctico-Proyecto-integrador-comandos-Shell-Script-/pepe' no existe o no es un directorio
 2025-06-12 10:26:34 ERROR: rmdir_no_confirm: 'pepe' no existe o no es un directorio
 2025-06-12 10:28:09 ERROR: rmdir_no_confirm: 'pepe' no existe o no es un directorio
+2025-06-12 10:33:12 ERROR: rmdir_no_confirm: 'pepe' no existe o no es un directorio
+2025-06-12 10:33:25 ERROR: Intento de borrar (con confirm) NO dir válido: '/home/frang/Escritorio/Sistemas Operativos UCC/Parcial-Pr-ctico-Proyecto-integrador-comandos-Shell-Script-/poko'
+2025-06-12 10:33:34 ERROR: Intento de borrar (sin confirm) NO dir válido: '/home/frang/Escritorio/Sistemas Operativos UCC/Parcial-Pr-ctico-Proyecto-integrador-comandos-Shell-Script-/poko'
+2025-06-12 10:57:46 ERROR: Directorio no existe para listar_directorioXdireccion(): 'dir_list=$(find "$ruta" -maxdepth 1 -type d -printf '%f/n' 2>/dev/null | grep -vE '^(./?|)$')'
+2025-06-12 10:58:17 ERROR: Directorio no existe para listar_directorioXdireccion(): 'lalalala'
+2025-06-12 10:58:49 ERROR: Directorio no existe para listar_directorioXdireccion(): 'ruta a'
+2025-06-12 11:02:32 ERROR: Directorio inbalido en borrar_directorio_confirmacion(): 'laruta7equivocada'
+2025-06-12 11:02:52 ERROR: Directorio base inbalido en crear_directorio(): 'ruta/equivacada/paracrear'
